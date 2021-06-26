@@ -1,3 +1,4 @@
+const { response } = require("express");
 const express = require("express");
 const Partner = require("../models/partner");
 const partnerRouter = express.Router();
@@ -36,6 +37,37 @@ partnerRouter
 			})
 			.catch((err) => next(err));
 	});
+
+partnerRouter
+	.route("/deletePartner")
+	.get((req, res, next) => {
+		Partner.findOne({ name: req.body.name })
+			.then((partners) => {
+				res.statusCode = 200;
+				res.setHeader("Content-Type", "application/json");
+				res.json(partners);
+			})
+			.catch((err) => next(err));
+	})
+	.delete((req, res, next) => {
+		Partner.findOneAndDelete({ name: req.body.name })
+			.then((response) => {
+				res.statusCode = 200;
+				res.setHeader("Content-Type", "application/json");
+				res.json(response);
+			})
+			.catch((err) => next(err));
+	});
+
+partnerRouter.route("/getFeaturedPartnersCount").get((req, res, next) => {
+	Partner.find({ featured: true })
+		.then((partners) => {
+			res.statusCode = 200;
+			res.setHeader("Content-Type", "application/json");
+			res.json(partners.length);
+		})
+		.catch((err) => next(err));
+});
 
 partnerRouter
 	.route("/:partnerId")
